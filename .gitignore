@@ -1,5 +1,24 @@
+# Maven build output
 target/
 
+# NetBeans files
+nbproject/private/
+build/
+dist/
+nbdist/
+.nb-gradle/
+
+# Compiled Java files
+*.class
+
+# Database configuration (contains credentials)
 src/main/resources/database.properties
 
-*.class
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
