@@ -2,12 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package CreditCalculator;
+package Strategy;
 
 /**
  *
  * @author oenca
  */
-public class java {
+public class CreditService {
     
 }
