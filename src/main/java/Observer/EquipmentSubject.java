@@ -52,7 +52,7 @@ public class EquipmentSubject {
             equipmentDTO.setStatus("down_for_maintenance");
             equipmentDAO.updateStatus(equipmentDTO.getEquipmentId(), "down_for_maintenance");
             //Alert Creation
-            MaintenanceAlert alert = new MaintenanceAlert(equipmentDTO, equipmentDTO.getUsageHours());
+            MaintenanceAlertEvent alert = new MaintenanceAlertEvent(equipmentDTO, equipmentDTO.getUsageHours());
             notifyObservers(alert);
         }
     }
@@ -60,7 +60,7 @@ public class EquipmentSubject {
      * notifies all registered observers.
      * @param alert 
      */
-    private void notifyObservers(MaintenanceAlert alert){
+    private void notifyObservers(MaintenanceAlertEvent alert){
         for (MaintenanceObserver observer : observers){
             observer.onMaintenanceThresholdCrossed(alert);
         }

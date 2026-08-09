@@ -7,7 +7,7 @@ package Observer;
 public class ShopTechNotifier implements MaintenanceObserver {
     
     @Override
-    public void onMaintenanceThresholdCrossed(MaintenanceAlert alert) {
+    public void onMaintenanceThresholdCrossed(MaintenanceAlertEvent alert) {
         System.out.println("Notify Shop-Tech: " + alert.getMessage());
     }
 }
