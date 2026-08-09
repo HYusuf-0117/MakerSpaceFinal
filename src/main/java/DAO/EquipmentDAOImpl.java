@@ -194,4 +194,35 @@ public abstract class EquipmentDAOImpl implements EquipmentDAO {
         e.setMaintenanceThreshold(rs.getDouble("maintenance_threshold"));
         return e;
     }
+    
+    /**
+     * Updates the equipment Tables usage hours 
+     * @param equipmentID
+     * @param newUsageHours
+     * @throws SQLException 
+     */
+    @Override
+    public void updateUsageHours(int equipmentID, double newUsageHours) throws SQLException {
+        String sql = "UPDATE Equipment SET usage_hours = ? Where equipment_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)){
+            ps.setDouble(1, newUsageHours);
+            ps.setInt(2, equipmentID);
+            ps.executeUpdate();
+        }
+    }
+    /**
+     * Updates the equipment tables status
+     * @param equipmentID
+     * @param newStatus
+     * @throws SQLException 
+     */
+    @Override
+    public void updateStatus(int equipmentID, String newStatus) throws SQLException {
+        String sql = "UPDATE Equipment SET status =? WHERE equipment_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)){
+            ps.setString(1, newStatus);
+            ps.setInt(2, equipmentID);
+            ps.executeUpdate();
+        }
+    }
 }
