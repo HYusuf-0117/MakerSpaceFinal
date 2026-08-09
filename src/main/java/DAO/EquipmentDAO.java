@@ -34,4 +34,10 @@ public interface EquipmentDAO extends GenericDAO<Equipment> {
      * @throws SQLException if a database access error occurs
      */
     List<Equipment> findByStatus(String status) throws SQLException;
+    
+    
+    //updates usage hours and equipment maintenance status based on Maintenance observers
+    void updateUsageHours(int equipmentID, double NewUsageHours) throws SQLException;
+    
+    void updateStatus(int equipmentID, String newStatus) throws SQLException;
 }
