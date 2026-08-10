@@ -38,7 +38,6 @@ public class WorkOrderDAOImpl implements WorkOrderDAO {
      */
     @Override
     public void create(WorkOrder workOrder) throws SQLException {
-
         String sql = "INSERT INTO Work_Order "
                 + "(member_id, description, priority, status) "
                 + "VALUES (?, ?, ?, ?)";
@@ -75,15 +74,12 @@ public class WorkOrderDAOImpl implements WorkOrderDAO {
      */
     @Override
     public WorkOrder findById(int id) throws SQLException {
-
         String sql = "SELECT * FROM Work_Order WHERE work_order_id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-
             ps.setInt(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
-
                 if (rs.next()) {
                     return mapRow(rs);
                 }
@@ -100,14 +96,12 @@ public class WorkOrderDAOImpl implements WorkOrderDAO {
      * @throws SQLException if a database error occurs
      */
     @Override
-    public List<WorkOrder> findAll() throws SQLException {
-
+    public List findAll() throws SQLException {
         String sql = "SELECT * FROM Work_Order";
-
-        List<WorkOrder> workOrders = new ArrayList<>();
+        List workOrders = new ArrayList<>();
 
         try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 workOrders.add(mapRow(rs));
@@ -125,25 +119,20 @@ public class WorkOrderDAOImpl implements WorkOrderDAO {
      * @throws SQLException if a database error occurs
      */
     private WorkOrder mapRow(ResultSet rs) throws SQLException {
-
         WorkOrder workOrder = new WorkOrder();
 
         workOrder.setWorkOrderId(
                 rs.getInt("work_order_id")
         );
-
         workOrder.setRequestorId(
                 rs.getInt("member_id")
         );
-
         workOrder.setDescription(
                 rs.getString("description")
         );
-
         workOrder.setPriority(
                 rs.getString("priority")
         );
-
         workOrder.setStatus(
                 rs.getString("status")
         );
@@ -158,7 +147,6 @@ public class WorkOrderDAOImpl implements WorkOrderDAO {
      * @return database-compatible priority
      */
     private String convertPriority(String priority) {
-
         if (priority == null) {
             return "Medium";
         }
@@ -184,7 +172,6 @@ public class WorkOrderDAOImpl implements WorkOrderDAO {
      * @return database-compatible status
      */
     private String convertStatus(String status) {
-
         if (status == null) {
             return "Submitted";
         }
