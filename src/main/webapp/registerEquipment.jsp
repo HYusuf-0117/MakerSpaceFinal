@@ -57,6 +57,13 @@
                    id="model"
                    name="model"
                    required>
+            
+            <label for="consumableType">Consumable Type:</label>
+
+            <input type="text"
+                   id="consumableType"
+                   name="consumableType"
+                   placeholder="e.g. PLA Filament">
 
             <label for="hourlyRate">Hourly Rate:</label>
 

@@ -1,7 +1,6 @@
 package Observer;
 import DAO.MaintenanceAlertDAO;
 import DTO.MaintenanceAlert;
-import java.sql.Timestamp;
 /**
  * Observer that logs maintenance alerts to the database.
  * @author Auston Gurr
@@ -18,10 +17,9 @@ public class MaintenanceAlertLogger implements MaintenanceObserver {
     public void onMaintenanceThresholdCrossed(MaintenanceAlertEvent alert){
         try {
             MaintenanceAlert dto = new MaintenanceAlert(
-            alert.getEquipment().getEquipmentId(),
-            alert.getMessage(),
-            alert.getWearHours(),
-            new Timestamp(System.currentTimeMillis())
+                alert.getEquipment().getEquipmentId(),
+                "Usage Threshold",
+                alert.getMessage()
             );
             alertDAO.create(dto);
             

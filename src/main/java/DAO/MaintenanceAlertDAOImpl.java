@@ -20,19 +20,22 @@ public class MaintenanceAlertDAOImpl implements MaintenanceAlertDAO{
     }
     
     @Override
-    public void create(MaintenanceAlert alert) throws SQLException{
-        String sql = "INSERT INTO Maintenance_Alert (equipment_id, alert_message, wear_hours, timestamp" 
-                + "VALUES (?, ?, ?, ?)";
-        
-        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    public void create(MaintenanceAlert alert) throws SQLException {
+        String sql = "INSERT INTO maintenance_alert "
+                + "(equipment_id, alert_type, alert_message) "
+                + "VALUES (?, ?, ?)";
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setInt(1, alert.getEquipmentId());
-            ps.setString(2, alert.getAlertMessage());
-            ps.setDouble(3, alert.getWearHours());
-            ps.setTimestamp(4, alert.getTimestamp());
+            ps.setString(2, "Usage Threshold");
+            ps.setString(3, alert.getAlertMessage());
+
             ps.executeUpdate();
-            
-            try (ResultSet keys = ps.getGeneratedKeys()){
-                if (keys.next()){
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
                     alert.setAlertID(keys.getInt(1));
                 }
             }
@@ -90,27 +93,26 @@ public class MaintenanceAlertDAOImpl implements MaintenanceAlertDAO{
     
     private MaintenanceAlert mapRow(ResultSet rs) throws SQLException {
         MaintenanceAlert alert = new MaintenanceAlert();
+
         alert.setAlertID(rs.getInt("alert_id"));
         alert.setEquipmentId(rs.getInt("equipment_id"));
         alert.setAlertMessage(rs.getString("alert_message"));
-        alert.setWearHours(rs.getDouble("wear_hours"));
-        alert.setTimestamp(rs.getTimestamp("timestamp"));
+
         return alert;
     }
     
     @Override
-public void update(MaintenanceAlert alert) throws SQLException {
-    String sql = "UPDATE Maintenance_Alert SET equipment_id = ?, alert_message = ?, wear_hours = ?, timestamp = ? "
-               + "WHERE alert_id = ?";
+    public void update(MaintenanceAlert alert) throws SQLException {
+        String sql = "UPDATE Maintenance_Alert "
+                   + "SET equipment_id = ?, alert_message = ? "
+                   + "WHERE alert_id = ?";
 
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setInt(1, alert.getEquipmentId());
-        ps.setString(2, alert.getAlertMessage());
-        ps.setDouble(3, alert.getWearHours());
-        ps.setTimestamp(4, alert.getTimestamp());
-        ps.setInt(5, alert.getAlertID());
-        ps.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, alert.getEquipmentId());
+            ps.setString(2, alert.getAlertMessage());
+            ps.setInt(3, alert.getAlertID());
+            ps.executeUpdate();
+        }
     }
-}
 
 }

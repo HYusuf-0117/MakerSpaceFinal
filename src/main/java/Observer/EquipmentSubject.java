@@ -47,12 +47,22 @@ public class EquipmentSubject {
      * @throws SQLException 
      */
     private void checkThreshold() throws SQLException {
-        if (equipmentDTO.getUsageHours() >= equipmentDTO.getMaintenanceThreshold() && !"down_for_maintenance".equals(equipmentDTO.getStatus())){
-            //update status in DTO and DB
-            equipmentDTO.setStatus("down_for_maintenance");
-            equipmentDAO.updateStatus(equipmentDTO.getEquipmentId(), "down_for_maintenance");
-            //Alert Creation
-            MaintenanceAlertEvent alert = new MaintenanceAlertEvent(equipmentDTO, equipmentDTO.getUsageHours());
+        if (equipmentDTO.getUsageHours() >= equipmentDTO.getMaintenanceThreshold()
+                && !"Maintenance".equals(equipmentDTO.getStatus())) {
+
+            equipmentDTO.setStatus("Maintenance");
+
+            equipmentDAO.updateStatus(
+                    equipmentDTO.getEquipmentId(),
+                    "Maintenance"
+            );
+
+            MaintenanceAlertEvent alert =
+                    new MaintenanceAlertEvent(
+                            equipmentDTO,
+                            equipmentDTO.getUsageHours()
+                    );
+
             notifyObservers(alert);
         }
     }

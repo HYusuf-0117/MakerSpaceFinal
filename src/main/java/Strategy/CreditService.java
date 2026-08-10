@@ -65,7 +65,7 @@ public class CreditService {
             // Create ledger entry
             LedgerEntry entry = new LedgerEntry();
             entry.setUserId(userId);
-            entry.setEntryType("CREDIT");
+            entry.setEntryType("Credit");
             entry.setAmount(credits);
             entry.setSourceType(activity.getActivityType());
             entry.setDescription("Credits earned from " + activity.getActivityType());
@@ -102,9 +102,9 @@ public class CreditService {
             // Create ledger entry
             LedgerEntry entry = new LedgerEntry();
             entry.setUserId(userId);
-            entry.setEntryType("DEBIT");
+            entry.setEntryType("Debit");
             entry.setAmount(debits);
-            entry.setSourceType("EQUIPMENT_USAGE");
+            entry.setSourceType("Equipment Use");
             entry.setDescription("Debit for equipment usage: " + usage.getHoursUsed() + " hours");
             entry.setEntryDate(new Timestamp(System.currentTimeMillis()));
             ledgerDAO.create(entry);

@@ -53,12 +53,24 @@
                     Create Work Order
                 </a>
             </li>
-
+            
+            <li>
+                <a href="ledger">Credit Ledger</a>
+            </li>
+            
+            <li>
+                <a href="session">
+                    Equipment Sessions
+                </a>
+            </li>
+            
             <li>
                 <a href="logout">
                     Logout
                 </a>
             </li>
+            
+            
 
         </ul>
 

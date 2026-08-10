@@ -32,7 +32,7 @@ import java.util.List;
  * @author Hasbiya Yusuf
  * @version 1.0
  */
-public abstract class EquipmentDAOImpl implements EquipmentDAO {
+public class EquipmentDAOImpl implements EquipmentDAO {
 
     private Connection connection;
 
@@ -54,17 +54,18 @@ public abstract class EquipmentDAOImpl implements EquipmentDAO {
      */
     
     public void create(Equipment e) throws SQLException {
-        String sql = "INSERT INTO Equipment (asset_tag, make, model, category, status, "
-                + "hourly_rate, usage_hours, maintenance_threshold) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Equipment (asset_tag, make, model, category, consumable_type, status, "
+                + "hourly_rate, usage_hours, maintenance_threshold) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, e.getAssetTag());
             ps.setString(2, e.getMake());
             ps.setString(3, e.getModel());
             ps.setString(4, e.getCategory());
-            ps.setString(5, e.getStatus());
-            ps.setDouble(6, e.getHourlyRate());
-            ps.setDouble(7, e.getUsageHours());
-            ps.setDouble(8, e.getMaintenanceThreshold());
+            ps.setString(5, e.getConsumableType());
+            ps.setString(6, e.getStatus());
+            ps.setDouble(7, e.getHourlyRate());
+            ps.setDouble(8, e.getUsageHours());
+            ps.setDouble(9, e.getMaintenanceThreshold());
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -101,7 +102,7 @@ public abstract class EquipmentDAOImpl implements EquipmentDAO {
      */
 
     public void update(Equipment e) throws SQLException {
-        String sql = "UPDATE Equipment SET asset_tag = ?, make = ?, model = ?, category = ?, "
+        String sql = "UPDATE Equipment SET asset_tag = ?, make = ?, model = ?, category = ?, consumable_type = ?, "
                 + "status = ?, hourly_rate = ?, usage_hours = ?, maintenance_threshold = ? "
                 + "WHERE equipment_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -109,11 +110,12 @@ public abstract class EquipmentDAOImpl implements EquipmentDAO {
             ps.setString(2, e.getMake());
             ps.setString(3, e.getModel());
             ps.setString(4, e.getCategory());
-            ps.setString(5, e.getStatus());
-            ps.setDouble(6, e.getHourlyRate());
-            ps.setDouble(7, e.getUsageHours());
-            ps.setDouble(8, e.getMaintenanceThreshold());
-            ps.setInt(9, e.getEquipmentId());
+            ps.setString(5, e.getConsumableType());
+            ps.setString(6, e.getStatus());
+            ps.setDouble(7, e.getHourlyRate());
+            ps.setDouble(8, e.getUsageHours());
+            ps.setDouble(9, e.getMaintenanceThreshold());
+            ps.setInt(10, e.getEquipmentId());
             ps.executeUpdate();
         }
     }
@@ -188,6 +190,7 @@ public abstract class EquipmentDAOImpl implements EquipmentDAO {
         e.setMake(rs.getString("make"));
         e.setModel(rs.getString("model"));
         e.setCategory(rs.getString("category"));
+        e.setConsumableType(rs.getString("consumable_type"));
         e.setStatus(rs.getString("status"));
         e.setHourlyRate(rs.getDouble("hourly_rate"));
         e.setUsageHours(rs.getDouble("usage_hours"));

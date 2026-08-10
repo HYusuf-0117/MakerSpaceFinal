@@ -1,5 +1,8 @@
 package Servlets;
 
+import DAO.WorkOrderDAO;
+import DAO.WorkOrderDAOImpl;
+import java.sql.SQLException;
 import Builder.ConcreteWorkOrderBuilder;
 import Builder.WorkOrder;
 import Builder.WorkOrderBuilder;
@@ -76,9 +79,7 @@ public class WorkOrderServlet extends HttpServlet {
                         .toList();
             }
 
-            WorkOrderBuilder builder =
-                    new ConcreteWorkOrderBuilder();
-
+            WorkOrderBuilder builder = new ConcreteWorkOrderBuilder();
             WorkOrder workOrder = builder
                     .setRequestor(requestorId)
                     .setDescription(description)
@@ -87,8 +88,11 @@ public class WorkOrderServlet extends HttpServlet {
                     .setExternalClient(externalClientName)
                     .build();
 
-            request.setAttribute("workOrder", workOrder);
+            WorkOrderDAO workOrderDAO = new WorkOrderDAOImpl();
 
+            workOrderDAO.create(workOrder);
+
+            request.setAttribute("workOrder", workOrder);
             request.setAttribute(
                     "message",
                     "Work order created successfully."
@@ -98,7 +102,6 @@ public class WorkOrderServlet extends HttpServlet {
                     .forward(request, response);
 
         } catch (NumberFormatException e) {
-
             request.setAttribute(
                     "error",
                     "Requestor ID must be a valid number."
@@ -108,10 +111,18 @@ public class WorkOrderServlet extends HttpServlet {
                     .forward(request, response);
 
         } catch (IllegalStateException e) {
-
             request.setAttribute(
                     "error",
                     e.getMessage()
+            );
+
+            request.getRequestDispatcher("workOrder.jsp")
+                    .forward(request, response);
+        } catch (SQLException e) {
+            request.setAttribute(
+                    "error",
+                    "Database error while creating work order: "
+                    + e.getMessage()
             );
 
             request.getRequestDispatcher("workOrder.jsp")

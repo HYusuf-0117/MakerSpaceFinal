@@ -41,6 +41,7 @@
                     <th>Hourly Rate</th>
                     <th>Usage Hours</th>
                     <th>Maintenance Threshold</th>
+                    <th>Consumable Type</th>
                 </tr>
 
                 <% for (Equipment equipment : equipmentList) { %>
@@ -55,6 +56,7 @@
                         <td><%= equipment.getHourlyRate() %></td>
                         <td><%= equipment.getUsageHours() %></td>
                         <td><%= equipment.getMaintenanceThreshold() %></td>
+                        <td><%= equipment.getConsumableType() %></td>
                     </tr>
 
                 <% } %>

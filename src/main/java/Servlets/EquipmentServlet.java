@@ -1,5 +1,15 @@
 package Servlets;
 
+import DAO.EquipmentDAO;
+import DAO.EquipmentDAOImpl;
+import DTO.Equipment;
+
+import java.sql.SQLException;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.sql.SQLException;
+import DAO.EquipmentDAO;
+import DAO.EquipmentDAOImpl;
 import DTO.Equipment;
 import SimpleFactory.EquipmentFactory;
 import java.io.IOException;
@@ -30,13 +40,25 @@ public class EquipmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        /*
-         * Database loading will be connected later once
-         * EquipmentDAOImpl is made concrete.
-         */
+        try {
+            EquipmentDAO equipmentDAO = new EquipmentDAOImpl();
 
-        request.getRequestDispatcher("equipmentList.jsp")
-                .forward(request, response);
+            List<Equipment> equipmentList = equipmentDAO.findAll();
+
+            request.setAttribute("equipmentList", equipmentList);
+
+            request.getRequestDispatcher("equipmentList.jsp")
+                    .forward(request, response);
+
+        } catch (SQLException e) {
+            request.setAttribute(
+                    "error",
+                    "Unable to load equipment: " + e.getMessage()
+            );
+
+            request.getRequestDispatcher("equipmentList.jsp")
+                    .forward(request, response);
+        }
     }
 
     /**
@@ -51,44 +73,43 @@ public class EquipmentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        try {
+        HttpSession session = request.getSession(false);
 
+        if (session == null || !"Shop-Tech".equals(session.getAttribute("userType"))) {
+            response.sendError( 
+                    HttpServletResponse.SC_FORBIDDEN, "Only Shop-Tech users can register equipment."
+            );
+            return;
+        }
+        
+        try {
             String type = request.getParameter("type");
             String assetTag = request.getParameter("assetTag");
             String make = request.getParameter("make");
             String model = request.getParameter("model");
+            
+            String consumableType = request.getParameter("consumableType");
 
             double hourlyRate =
                     Double.parseDouble(
                             request.getParameter("hourlyRate")
-                    );
+            );
 
             double maintenanceThreshold =
                     Double.parseDouble(
                             request.getParameter("maintenanceThreshold")
-                    );
+            );
 
-            Equipment equipment =
-                    EquipmentFactory.createEquipment(
-                            type,
-                            0,
-                            assetTag,
-                            make,
-                            model,
-                            "Available",
-                            hourlyRate,
-                            0.0,
-                            maintenanceThreshold
-                    );
+            Equipment equipment = EquipmentFactory.createEquipment( 
+                type, 0, assetTag, make, model,
+                "Available", hourlyRate,0.0,
+                maintenanceThreshold
+            );
+            
+            equipment.setConsumableType(consumableType);
 
-            /*
-             * Database save will be added later:
-             *
-             * EquipmentDAO equipmentDAO =
-             *         new EquipmentDAOImpl();
-             *
-             * equipmentDAO.create(equipment);
-             */
+            EquipmentDAO equipmentDAO = new EquipmentDAOImpl();
+            equipmentDAO.create(equipment);
 
             request.setAttribute(
                     "equipment",
@@ -113,11 +134,10 @@ public class EquipmentServlet extends HttpServlet {
             request.getRequestDispatcher("registerEquipment.jsp")
                     .forward(request, response);
 
-        } catch (IllegalArgumentException e) {
-
+        } catch (SQLException e) {
             request.setAttribute(
                     "error",
-                    e.getMessage()
+                    "Database error: " + e.getMessage()
             );
 
             request.getRequestDispatcher("registerEquipment.jsp")

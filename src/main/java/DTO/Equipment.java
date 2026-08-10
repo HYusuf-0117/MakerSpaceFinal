@@ -32,6 +32,7 @@ public class Equipment {
     private double hourlyRate;
     private double usageHours;
     private double maintenanceThreshold;
+    private String consumableType;
 
     /**
      * Creates an empty Equipment object.
@@ -225,5 +226,23 @@ public class Equipment {
      */
     public void setMaintenanceThreshold(double maintenanceThreshold) {
         this.maintenanceThreshold = maintenanceThreshold;
+    }
+    
+    /**
+     * Gets the consumable Type.
+     *
+     * @return consumableType the type of the consumable to assign.
+     */
+    public String getConsumableType() {
+        return consumableType;
+    }
+    
+    /**
+     * Sets the consumable Type.
+     *
+     * @param consumableType the type of the consumable to assign.
+     */
+    public void setConsumableType(String consumableType) {
+        this.consumableType = consumableType;
     }
 }

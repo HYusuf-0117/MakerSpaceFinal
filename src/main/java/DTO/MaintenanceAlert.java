@@ -7,19 +7,21 @@ import java.sql.Timestamp;
  * @author Auston Gurr
  */
 public class MaintenanceAlert {
+
     private int alertID;
     private int equipmentId;
+    private String alertType;
     private String alertMessage;
-    private double wearHours;
-    private Timestamp timestamp;
-    
-    public MaintenanceAlert(){}
-    
-    public MaintenanceAlert(int equipmentId, String alertMessage, double wearHours, Timestamp timestamp) {
+    private boolean resolved;
+
+    public MaintenanceAlert() {
+    }
+
+    public MaintenanceAlert(int equipmentId, String alertType, String alertMessage) {
         this.equipmentId = equipmentId;
+        this.alertType = alertType;
         this.alertMessage = alertMessage;
-        this.wearHours = wearHours;
-        this.timestamp = timestamp;
+        this.resolved = false;
     }
 
     public int getAlertID() {
@@ -38,6 +40,14 @@ public class MaintenanceAlert {
         this.equipmentId = equipmentId;
     }
 
+    public String getAlertType() {
+        return alertType;
+    }
+
+    public void setAlertType(String alertType) {
+        this.alertType = alertType;
+    }
+
     public String getAlertMessage() {
         return alertMessage;
     }
@@ -46,21 +56,11 @@ public class MaintenanceAlert {
         this.alertMessage = alertMessage;
     }
 
-    public double getWearHours() {
-        return wearHours;
+    public boolean isResolved() {
+        return resolved;
     }
 
-    public void setWearHours(double wearHours) {
-        this.wearHours = wearHours;
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
     }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-    
-    
 }
