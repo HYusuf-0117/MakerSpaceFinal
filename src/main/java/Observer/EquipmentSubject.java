@@ -66,6 +66,34 @@ public class EquipmentSubject {
             notifyObservers(alert);
         }
     }
+    
+    /**
+     * Forces equipment into Maintenance status and notifies observers,
+     * regardless of the usage-hours threshold. Used when vendor
+     * diagnostics report a critical health reading.
+     *
+     * @throws SQLException if the status update fails
+     */
+    public void forceMaintenance() throws SQLException {
+        if (!"Maintenance".equals(equipmentDTO.getStatus())) {
+
+            equipmentDTO.setStatus("Maintenance");
+
+            equipmentDAO.updateStatus(
+                    equipmentDTO.getEquipmentId(),
+                    "Maintenance"
+            );
+
+            MaintenanceAlertEvent alert =
+                    new MaintenanceAlertEvent(
+                            equipmentDTO,
+                            equipmentDTO.getUsageHours()
+                    );
+
+            notifyObservers(alert);
+        }
+    }
+    
     /**
      * notifies all registered observers.
      * @param alert 

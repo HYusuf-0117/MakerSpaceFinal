@@ -65,6 +65,12 @@
             </li>
             
             <li>
+                <a href="maintenance">
+                    Maintenance
+                </a>
+            </li>
+            
+            <li>
                 <a href="logout">
                     Logout
                 </a>

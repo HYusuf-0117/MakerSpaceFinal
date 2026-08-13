@@ -9,6 +9,11 @@ import Observer.EquipmentSubject;
 import Observer.MaintenanceAlertLogger;
 import Observer.ShopTechNotifier;
 
+import Adapter.EquipmentDiagnostics;
+import Adapter.PrinterDiagnosticsAdapter;
+import Adapter.PrinterVendorAPI;
+import business.MaintanenceMonitorService;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -72,115 +77,85 @@ public class MaintenanceServlet extends HttpServlet {
             throws ServletException, IOException {
 
         EquipmentDAO equipmentDAO = null;
+        String action = request.getParameter("action");
 
         try {
-            int equipmentId = Integer.parseInt(
-                    request.getParameter("equipmentId")
-            );
-
-            double hoursUsed = Double.parseDouble(
-                    request.getParameter("hoursUsed")
-            );
-
-            if (hoursUsed <= 0) {
-                throw new IllegalArgumentException(
-                        "Usage hours must be greater than zero."
-                );
-            }
-
             equipmentDAO = new EquipmentDAOImpl();
+            int equipmentId = Integer.parseInt(request.getParameter("equipmentId"));
 
             Equipment equipment = equipmentDAO.findById(equipmentId);
 
             if (equipment == null) {
-                throw new IllegalArgumentException(
-                        "Equipment not found."
-                );
+                throw new IllegalArgumentException("Equipment not found.");
             }
 
-            MaintenanceAlertDAO alertDAO =
-                    new MaintenanceAlertDAOImpl();
+            if ("vendorCheck".equals(action)) {
 
-            EquipmentSubject subject =
-                    new EquipmentSubject(equipment, equipmentDAO);
+                if (!"3D Printer".equals(equipment.getCategory())) {
+                    throw new IllegalArgumentException(
+                            "Vendor diagnostics are only available for 3D Printers.");
+                }
 
-            // Register Observer responsible for saving alerts
-            subject.addObserver(
-                    new MaintenanceAlertLogger(alertDAO)
-            );
+                int simulatedHealth = Integer.parseInt(request.getParameter("simulatedHealth"));
+                long simulatedMinutes = Long.parseLong(request.getParameter("simulatedMinutes"));
 
-            // Register Observer responsible for notifying Shop-Tech users
-            subject.addObserver(
-                    new ShopTechNotifier()
-            );
+                // The vendor SDK's own method signatures (getPrinterHealth(),
+                // getUsageMinutes()) are outside our control; the Adapter is
+                // the only place that knows about them.
+                PrinterVendorAPI vendorApi = new PrinterVendorAPI(simulatedHealth, simulatedMinutes);
+                EquipmentDiagnostics diagnostics = new PrinterDiagnosticsAdapter(vendorApi);
 
-            // Add usage and check maintenance threshold
-            subject.addUsage(hoursUsed);
+                MaintenanceAlertDAO alertDAO = new MaintenanceAlertDAOImpl();
+                MaintanenceMonitorService monitorService =
+                        new MaintanenceMonitorService(equipmentDAO, alertDAO);
 
-            request.setAttribute(
-                    "message",
-                    "Equipment usage updated successfully."
-            );
+                monitorService.checkEquipment(equipment, diagnostics);
 
-            request.setAttribute(
-                    "equipment",
-                    equipment
-            );
+                request.setAttribute("message",
+                        "Vendor diagnostics processed. Reported status: " + diagnostics.getStatus()
+                        + ", wear hours: " + String.format("%.2f", diagnostics.getWearHours()) + ".");
 
-            request.setAttribute(
-                    "hoursUsed",
-                    hoursUsed
-            );
+            } else {
 
-            request.setAttribute(
-                    "maintenanceRequired",
-                    "Maintenance".equals(equipment.getStatus())
-            );
+                double hoursUsed = Double.parseDouble(request.getParameter("hoursUsed"));
 
-            // Reload equipment after update
-            request.setAttribute(
-                    "equipmentList",
-                    equipmentDAO.findAll()
-            );
+                if (hoursUsed <= 0) {
+                    throw new IllegalArgumentException("Usage hours must be greater than zero.");
+                }
 
-            request.getRequestDispatcher("maintenance.jsp")
-                    .forward(request, response);
+                MaintenanceAlertDAO alertDAO = new MaintenanceAlertDAOImpl();
+                EquipmentSubject subject = new EquipmentSubject(equipment, equipmentDAO);
+                subject.addObserver(new MaintenanceAlertLogger(alertDAO));
+                subject.addObserver(new ShopTechNotifier());
+                subject.addUsage(hoursUsed);
+
+                request.setAttribute("hoursUsed", hoursUsed);
+                request.setAttribute("message", "Equipment usage updated successfully.");
+            }
+
+            request.setAttribute("equipment", equipment);
+            request.setAttribute("maintenanceRequired", "Maintenance".equals(equipment.getStatus()));
+            request.setAttribute("equipmentList", equipmentDAO.findAll());
+
+            request.getRequestDispatcher("maintenance.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
 
-            request.setAttribute(
-                    "error",
-                    "Equipment ID and usage hours must be valid numbers."
-            );
-
+            request.setAttribute("error", "Please enter valid numeric values.");
             reloadEquipment(request, equipmentDAO);
-
-            request.getRequestDispatcher("maintenance.jsp")
-                    .forward(request, response);
+            request.getRequestDispatcher("maintenance.jsp").forward(request, response);
 
         } catch (IllegalArgumentException e) {
 
-            request.setAttribute(
-                    "error",
-                    e.getMessage()
-            );
-
+            request.setAttribute("error", e.getMessage());
             reloadEquipment(request, equipmentDAO);
-
-            request.getRequestDispatcher("maintenance.jsp")
-                    .forward(request, response);
+            request.getRequestDispatcher("maintenance.jsp").forward(request, response);
 
         } catch (SQLException e) {
 
-            request.setAttribute(
-                    "error",
-                    "Database error: " + e.getMessage()
-            );
-
+            request.setAttribute("error", "Database error: " + e.getMessage());
             reloadEquipment(request, equipmentDAO);
-
-            request.getRequestDispatcher("maintenance.jsp")
-                    .forward(request, response);
+            request.getRequestDispatcher("maintenance.jsp").forward(request, response);
         }
     }
 

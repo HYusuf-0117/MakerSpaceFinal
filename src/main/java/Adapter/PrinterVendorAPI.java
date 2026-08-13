@@ -19,13 +19,25 @@ package Adapter;
  */
 public class PrinterVendorAPI {
 
+    private final int printerHealth;
+    private final long usageMinutes;
+
+    /**
+     * @param printerHealth vendor-reported health score, 0-100
+     * @param usageMinutes  vendor-reported cumulative usage time, in minutes
+     */
+    public PrinterVendorAPI(int printerHealth, long usageMinutes) {
+        this.printerHealth = printerHealth;
+        this.usageMinutes = usageMinutes;
+    }
+
     /**
      * Returns the vendor-reported printer health score.
      *
      * @return health score from 0 to 100
      */
     public int getPrinterHealth() {
-        return 100;
+        return printerHealth;
     }
 
     /**
@@ -34,6 +46,6 @@ public class PrinterVendorAPI {
      * @return cumulative usage time in minutes
      */
     public long getUsageMinutes() {
-        return 0L;
+        return usageMinutes;
     }
 }
